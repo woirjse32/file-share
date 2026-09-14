@@ -210,11 +210,22 @@
         $filesGrid.innerHTML = '';
         $filesGrid.appendChild($loadingState);
 
-        try {
-            const res = await fetch(
+        const fetchList = async (authed) => {
+            const opts = authed
+                ? apiHeaders()
+                : { headers: { 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' };
+            return fetch(
                 `${API}/repos/${OWNER}/${REPO}/contents/${UPLOAD_DIR}?ref=${BRANCH}&t=${Date.now()}`,
-                apiHeaders()
+                opts
             );
+        };
+
+        try {
+            let res = await fetchList(true);
+
+            if (res.status === 401 && seq === loadSeq) {
+                res = await fetchList(false);
+            }
 
             if (seq !== loadSeq) return;
 
