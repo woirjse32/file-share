@@ -71,13 +71,17 @@
 
     function timeAgo(dateStr) {
         const diff = Date.now() - new Date(dateStr).getTime();
+        if (isNaN(diff) || diff < 0) return 'recently';
         const mins = Math.floor(diff / 60000);
         if (mins < 1) return 'just now';
         if (mins < 60) return mins + 'm ago';
         const hrs = Math.floor(mins / 60);
         if (hrs < 24) return hrs + 'h ago';
         const days = Math.floor(hrs / 24);
-        return days + 'd ago';
+        if (days < 30) return days + 'd ago';
+        const mo = Math.floor(days / 30);
+        if (mo < 12) return mo + 'mo ago';
+        return Math.floor(mo / 12) + 'y ago';
     }
 
     function apiHeaders() {
@@ -245,20 +249,24 @@
         $fileCount.textContent = files.length;
         $totalSize.textContent = formatBytes(totalBytes);
 
-        const sorted = [...files].sort((a, b) => {
-            const aTime = parseInt(a.name) || 0;
-            const bTime = parseInt(b.name) || 0;
-            return bTime - aTime;
-        });
+const sorted = [...files].sort((a, b) => {
+                const aTime = parseInt(a.name) || 0;
+                const bTime = parseInt(b.name) || 0;
+                return bTime - aTime;
+            });
 
-        sorted.forEach(file => {
-            const name = displayName(file.name);
-            const e = ext(name);
-            let iconClass = 'icon-other';
-            let label = e.replace('.', '') || '?';
-            if (e === '.py') { iconClass = 'icon-py'; label = 'PY'; }
-            else if (e === '.zip') { iconClass = 'icon-zip'; label = 'ZIP'; }
-            else if (e === '.exe') { iconClass = 'icon-exe'; label = 'EXE'; }
+            sorted.forEach(file => {
+                const name = displayName(file.name);
+                const e = ext(name);
+                let iconClass = 'icon-other';
+                let label = e.replace('.', '') || '?';
+                if (e === '.py') { iconClass = 'icon-py'; label = 'PY'; }
+                else if (e === '.zip') { iconClass = 'icon-zip'; label = 'ZIP'; }
+                else if (e === '.exe') { iconClass = 'icon-exe'; label = 'EXE'; }
+
+                const ts = parseInt(file.name, 10);
+                const date = !isNaN(ts) && ts > 0 ? new Date(ts) : new Date(file.commit?.author?.date || file.sha);
+                const dateLabel = isNaN(date.getTime()) ? 'recently' : timeAgo(date.toISOString());
 
             const card = document.createElement('div');
             card.className = 'file-card';
@@ -270,7 +278,7 @@
                         <div class="file-name">${escHtml(name)}</div>
                         <div class="file-meta">
                             <span>${formatBytes(file.size)}</span>
-                            <span>${timeAgo(file.commit?.author?.date || file.sha)}</span>
+                            <span>${dateLabel}</span>
                         </div>
                     </div>
                 </div>
