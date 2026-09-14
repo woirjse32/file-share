@@ -201,7 +201,10 @@
     // ============================================================
     //  LIST FILES
     // ============================================================
+    let loadSeq = 0;
+
     async function loadFiles() {
+        const seq = ++loadSeq;
         $loadingState.hidden = false;
         $emptyState.hidden = true;
         $filesGrid.innerHTML = '';
@@ -212,6 +215,8 @@
                 `${API}/repos/${OWNER}/${REPO}/contents/${UPLOAD_DIR}?ref=${BRANCH}`,
                 { headers: { 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' }
             );
+
+            if (seq !== loadSeq) return;
 
             if (res.status === 404) {
                 allFiles = [];
@@ -225,9 +230,11 @@
             }
 
             const data = await res.json();
+            if (seq !== loadSeq) return;
             allFiles = Array.isArray(data) ? data : [];
             renderFiles(allFiles);
         } catch (err) {
+            if (seq !== loadSeq) return;
             $loadingState.hidden = true;
             toast(`Failed to load files: ${err.message}`, 'error');
             $filesGrid.innerHTML = `<div class="loading-state"><p style="color:var(--red)">Error loading files</p></div>`;
