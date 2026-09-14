@@ -212,8 +212,8 @@
 
         try {
             const res = await fetch(
-                `${API}/repos/${OWNER}/${REPO}/contents/${UPLOAD_DIR}?ref=${BRANCH}`,
-                { headers: { 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' }
+                `${API}/repos/${OWNER}/${REPO}/contents/${UPLOAD_DIR}?ref=${BRANCH}&t=${Date.now()}`,
+                apiHeaders()
             );
 
             if (seq !== loadSeq) return;
