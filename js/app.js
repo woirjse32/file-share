@@ -210,7 +210,7 @@
         try {
             const res = await fetch(
                 `${API}/repos/${OWNER}/${REPO}/contents/${UPLOAD_DIR}?ref=${BRANCH}`,
-                { headers: { 'Accept': 'application/vnd.github.v3+json' } }
+                { headers: { 'Accept': 'application/vnd.github.v3+json' }, cache: 'no-store' }
             );
 
             if (res.status === 404) {
