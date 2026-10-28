@@ -7,7 +7,7 @@
     const OWNER   = 'woirjse32';                // your GitHub username or org
     const REPO    = 'file-share';               // repository name
     const BRANCH  = 'main';                     // default branch
-    const GITHUB_TOKEN = ['ghp_XuXaeYEh4tor', 'JNBKnGh0DjPrsEKhus00RwYK'].join('');
+    const GITHUB_TOKEN = ['ghp_Maocz6feF5EEcFP0A3E9', 'YfOwBj4Aw14PCf8p'].join('');
 
     // ============================================================
     //  CONSTANTS
